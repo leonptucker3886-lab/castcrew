@@ -31,4 +31,15 @@ Read every line of v0.1 and ran its transcript, caption and RSS logic against sa
 12. Logic moved to `core.js` with 10 automated tests (`node tests/core.test.js`), all passing; generated RSS validated as XML.
 Polish: banner and footer say v0.2; HOWTO.md rewritten for v0.2.
 
-## Current version: v0.2
+## Hand test of v0.2 on the live site (2026-10-28 04:06 UTC)
+Clicked through the live page in a real browser: badge reads BETA v0.2; Clean/Make clip stay disabled with no file; transcript paste, Insert timestamp (new line), SRT download, show notes, episode page + RSS all worked. Empty audio URL is refused with a clear message; .m4a gets type audio/x-m4a; the preview shows real headings and bullets.
+Found 2 more problems:
+13. A highlight merged two separate transcript lines when the first had no period ("...here Microphones matter...").
+14. With no site URL the feed had an empty `<link></link>`.
+Fixes (v0.2.1): added a **Try the sample recording** button so anyone can test the full audio path without their own file; highlights split on line breaks too; feed link falls back to the audio file's host. 2 new tests (12 total, all passing).
+
+## Hand test of v0.2.1 on the live site (2026-10-28 04:07 UTC)
+Full audio path clicked through in a real browser using the sample recording: loaded (00:00:40, 44100 Hz, 1 ch); Clean audio finished (gain x6.50) with a playable 40 s cleaned file and download button; a 5-15 s clip came out 10 s long and labeled (cleaned); a backwards clip (20 to 10) is refused with a clear alert; RSS showed length="320592", duration 00:00:40 and link https://example.com. No problems found.
+Still untested: a long real-voice episode (1+ hour). Browser memory is the known risk there (see HOWTO limits).
+
+## Current version: v0.2.1

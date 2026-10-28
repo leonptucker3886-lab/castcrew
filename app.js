@@ -4,14 +4,16 @@ let ctx,rawBuf,cleanBuf,lastPlayer,fileName='episode';
 const actx=()=>ctx||(ctx=new (window.AudioContext||window.webkitAudioContext)());
 const num=(id,min,max,def)=>{let v=parseFloat($(id).value);if(!isFinite(v))v=def;v=Math.min(max,Math.max(min,v));$(id).value=v;return v};
 const say=(id,msg,bad)=>{const e=$(id);e.textContent=msg;e.style.color=bad?'#B42318':''};
-$('file').onchange=async e=>{const f=e.target.files[0];if(!f)return;fileName=f.name.replace(/\.[^.]+$/,'')||'episode';
+async function load(f){if(!f)return;fileName=f.name.replace(/\.[^.]+$/,'')||'episode';
  $('cleanBtn').disabled=true;$('clipBtn').disabled=true;cleanBuf=null;$('dlClean').style.display='none';$('cleanPlayer').removeAttribute('src');$('cleanInfo').textContent='';
  $('rawPlayer').src=URL.createObjectURL(f);lastPlayer=$('rawPlayer');if(!$('bytes').value)$('bytes').value=f.size;
  say('info','Decoding '+f.name+'...');
  try{rawBuf=await actx().decodeAudioData(await f.arrayBuffer());}
  catch(err){rawBuf=null;say('info','Could not read "'+f.name+'". Try an MP3, WAV or M4A file.',true);return;}
  say('info',f.name+' | '+fmt(rawBuf.duration)+' ('+rawBuf.duration.toFixed(1)+' s) | '+rawBuf.sampleRate+' Hz | '+rawBuf.numberOfChannels+' ch');
- $('cleanBtn').disabled=false;$('clipBtn').disabled=false;$('cs').value=0;$('ce').value=Math.min(30,Math.floor(rawBuf.duration));};
+ $('cleanBtn').disabled=false;$('clipBtn').disabled=false;$('cs').value=0;$('ce').value=Math.min(30,Math.floor(rawBuf.duration));}
+$('file').onchange=e=>load(e.target.files[0]);
+$('sampleBtn').onclick=async()=>{say('info','Loading sample...');try{const r=await fetch('samples/sample-episode.mp3');if(!r.ok)throw 0;load(new File([await r.blob()],'sample-episode.mp3',{type:'audio/mpeg'}));}catch(e){say('info','Could not load the sample recording.',true)}};
 function wav(buf){const ch=buf.numberOfChannels,sr=buf.sampleRate,n=buf.length,b=new ArrayBuffer(44+n*ch*2),v=new DataView(b);let o=0;
  const s=t=>{for(const c of t)v.setUint8(o++,c.charCodeAt(0))},u32=x=>{v.setUint32(o,x,true);o+=4},u16=x=>{v.setUint16(o,x,true);o+=2};
  s('RIFF');u32(36+n*ch*2);s('WAVE');s('fmt ');u32(16);u16(1);u16(ch);u32(sr);u32(sr*ch*2);u16(ch*2);u16(16);s('data');u32(n*ch*2);

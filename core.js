@@ -17,8 +17,8 @@ function keywords(text,n){const c={};(String(text).toLowerCase().match(/[a-z']{4
 const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function chapters(text,gap){gap=gap||120;const L=parse(text);if(!L.length)return[];const out=[L[0]];
  for(const l of L)if(l.t-out[out.length-1].t>=gap)out.push(l);return out.map(c=>({t:c.t,title:(c.text.split(/[.!?]/)[0]||'').trim().slice(0,60)||'Chapter'}));}
-function showNotes(o){const raw=String(o.transcript||'').replace(/\[(?:\d+:)?\d{1,2}:\d{2}\]/g,' ');
- const sents=raw.split(/(?<=[.!?])\s+/).map(s=>s.replace(/\s+/g,' ').trim()).filter(s=>s.length>30);
+function showNotes(o){const P=parse(o.transcript);const raw=P.length?P.map(l=>l.text).join('\n'):String(o.transcript||'');
+ const sents=raw.split(/(?<=[.!?])\s+|\n+/).map(s=>s.replace(/\s+/g,' ').trim()).filter(s=>s.length>30);
  const kw=keywords(raw,8),score=s=>kw.reduce((a,k)=>a+(s.toLowerCase().includes(k)?1:0),0);
  const top=sents.map((s,i)=>({s,i,sc:score(s)})).sort((a,b)=>b.sc-a.sc||a.i-b.i).slice(0,3).sort((a,b)=>a.i-b.i).map(x=>x.s);
  const ch=chapters(o.transcript);
@@ -33,7 +33,7 @@ function mdToHtml(md){const lines=esc(md).split('\n');let h='',inList=false;cons
 function audioType(url){const e=(String(url).split(/[?#]/)[0].match(/\.([a-z0-9]+)$/i)||[])[1];
  return({mp3:'audio/mpeg',m4a:'audio/x-m4a',mp4:'audio/mp4',aac:'audio/aac',wav:'audio/wav',ogg:'audio/ogg',opus:'audio/ogg'})[(e||'').toLowerCase()]||'audio/mpeg';}
 const isUrl=u=>/^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(String(u||'').trim());
-function rss(o){const sh=esc(o.show||'My Podcast'),t=esc(o.title||'Episode'),au=String(o.audioUrl||'').trim(),site=esc(o.siteUrl||'');
+function rss(o){const sh=esc(o.show||'My Podcast'),t=esc(o.title||'Episode'),au=String(o.audioUrl||'').trim(),site=esc(o.siteUrl||(au.match(/^https?:\/\/[^/]+/i)||[''])[0]);
  const desc=esc(o.summary||o.title||'');const bytes=Math.max(0,Math.floor(o.bytes||0));
  return '<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd">\n<channel>\n<title>'+sh+'</title>\n<link>'+site+'</link>\n<description>'+sh+'</description>\n<language>en</language>\n<itunes:explicit>false</itunes:explicit>\n'+
  '<item>\n<title>'+t+'</title>\n<description>'+desc+'</description>\n<enclosure url="'+esc(au)+'" type="'+audioType(au)+'" length="'+bytes+'"/>\n<guid isPermaLink="false">'+esc(au)+'</guid>\n<pubDate>'+(o.date||new Date()).toUTCString()+'</pubDate>\n<itunes:duration>'+fmt(o.duration||0)+'</itunes:duration>\n</item>\n</channel>\n</rss>\n';}

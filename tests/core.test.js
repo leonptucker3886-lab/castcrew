@@ -11,4 +11,6 @@ t('audio type',()=>{a.strictEqual(C.audioType('https://x/e.m4a?y=1'),'audio/x-m4
 t('url check',()=>{a.ok(C.isUrl('https://a.com/e.mp3'));a.ok(!C.isUrl('a.com'));a.ok(!C.isUrl(''))});
 t('rss',()=>{const r=C.rss({show:'S&P',title:'E',audioUrl:'https://a.com/e.mp3',bytes:1234,duration:65,date:new Date(0)});
  a.ok(r.includes('length="1234"'));a.ok(r.includes('S&amp;P'));a.ok(r.includes('<itunes:duration>00:01:05'));a.ok(r.includes('isPermaLink="false"'))});
+t('highlights do not merge separate lines',()=>{const s=C.showNotes({transcript:'[00:00] First line about podcast audio cleanup without a period\n[00:30] Second line about podcast microphones and editing work.'});a.ok(!s.includes('period Second'))});
+t('rss link falls back to audio host',()=>a.ok(C.rss({audioUrl:'https://cdn.x.com/a.mp3'}).includes('<link>https://cdn.x.com</link>')));
 console.log(n+' tests passed');

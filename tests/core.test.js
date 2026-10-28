@@ -1,0 +1,14 @@
+const C=require('../core.js'),a=require('assert');let n=0;const t=(name,f)=>{f();n++;console.log('ok',name)};
+const T='[00:00:00] Welcome to the show. Today we talk about podcast audio cleanup and editing.\ncontinued line here\n[01:30] Microphones matter a lot for podcast audio, more than most people think.\n[00:04:10] Editing workflow: cut silence, level the audio, export captions for podcast listeners.';
+t('parse hh:mm:ss, mm:ss, joins untimed',()=>{const p=C.parse(T);a.strictEqual(p.length,3);a.strictEqual(p[1].t,90);a.ok(p[0].text.endsWith('continued line here'))});
+t('srt timing & last cue capped by duration',()=>{const s=C.srt(T,252);a.ok(s.startsWith('1\n00:00:00,000 --> 00:01:30,000'));a.ok(s.includes('00:04:10,000 --> 00:04:12,000'))});
+t('srt empty',()=>a.strictEqual(C.srt('no stamps',0),''));
+t('chapters 2-min gap',()=>{const c=C.chapters(T);a.deepStrictEqual(c.map(x=>x.t),[0,250]);a.strictEqual(c[0].title,'Welcome to the show')});
+t('show notes',()=>{const s=C.showNotes({transcript:T,title:'Ep 1',show:'Test'});a.ok(s.includes('## Chapters\n00:00:00 Welcome'));a.ok(s.includes('#podcast'));a.ok(!s.includes('[01:30]'))});
+t('escape',()=>a.strictEqual(C.esc(`<a href="x">'&`),'&lt;a href=&quot;x&quot;&gt;&#39;&amp;'));
+t('md to html escapes',()=>{const h=C.mdToHtml('# T\n- <b>x</b>\n\nhi');a.ok(h.includes('<h2>T</h2><ul><li>&lt;b&gt;'))});
+t('audio type',()=>{a.strictEqual(C.audioType('https://x/e.m4a?y=1'),'audio/x-m4a');a.strictEqual(C.audioType('https://x/e'),'audio/mpeg')});
+t('url check',()=>{a.ok(C.isUrl('https://a.com/e.mp3'));a.ok(!C.isUrl('a.com'));a.ok(!C.isUrl(''))});
+t('rss',()=>{const r=C.rss({show:'S&P',title:'E',audioUrl:'https://a.com/e.mp3',bytes:1234,duration:65,date:new Date(0)});
+ a.ok(r.includes('length="1234"'));a.ok(r.includes('S&amp;P'));a.ok(r.includes('<itunes:duration>00:01:05'));a.ok(r.includes('isPermaLink="false"'))});
+console.log(n+' tests passed');

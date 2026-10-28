@@ -11,14 +11,14 @@ button:disabled{background:#999}textarea,input{width:100%;box-sizing:border-box;
 textarea{min-height:140px}.row{display:flex;gap:8px}.row>*{flex:1}label{font-size:13px;font-weight:600}pre{white-space:pre-wrap;background:#f3f3f1;padding:8px;border-radius:6px;font-size:12px}
 .muted{color:#666;font-size:13px}
 </style></head><body>
-<header><b>CastCrew</b><small>BETA v0.1</small><div class="muted" style="color:#ccc">Your podcast back office. Everything runs in your browser. Nothing is uploaded.</div></header>
+<header><b>CastCrew</b><small>BETA v0.2</small><div class="muted" style="color:#ccc">Your podcast back office. Everything runs in your browser. Nothing is uploaded.</div></header>
 <main>
 <section><h2>1. Upload raw recording</h2><input type="file" id="file" accept="audio/*"><p id="info" class="muted"></p><audio id="rawPlayer" controls style="width:100%"></audio></section>
 <section><h2>2. Clean up audio</h2>
 <div class="row"><div><label>Rumble cut (high-pass Hz)</label><input id="hp" type="number" value="80"></div><div><label>Noise gate threshold (0-0.1)</label><input id="gate" type="number" step="0.005" value="0.01"></div><div><label>Target peak (0-1)</label><input id="peak" type="number" step="0.05" value="0.9"></div></div>
 <button id="cleanBtn" disabled>Clean audio</button><a id="dlClean" style="display:none" download="episode-clean.wav"><button>Download cleaned WAV</button></a>
 <audio id="cleanPlayer" controls style="width:100%"></audio><p id="cleanInfo" class="muted"></p></section>
-<section><h2>3. Transcript</h2><p class="muted">Paste or type the transcript. Start lines with timestamps like [00:01:30]. Press "Insert timestamp" while audio plays to stamp the current position.</p>
+<section><h2>3. Transcript</h2><p class="muted">Paste or type the transcript. Start lines with timestamps like [00:01:30] or [01:30]. Lines without a timestamp join the line above. Press "Insert timestamp" while audio plays to stamp the current position.</p>
 <button id="stampBtn">Insert timestamp</button><button id="txtDl">Download transcript (.txt)</button><button id="srtDl">Download captions (.srt)</button>
 <textarea id="transcript" placeholder="[00:00:00] Welcome to the show..."></textarea></section>
 <section><h2>4. Show notes and chapters</h2><div class="row"><div><label>Show name</label><input id="show" value="My Podcast"></div><div><label>Episode title</label><input id="title" value="Episode 1"></div></div>
@@ -26,8 +26,8 @@ textarea{min-height:140px}.row{display:flex;gap:8px}.row>*{flex:1}label{font-siz
 <button id="notesBtn">Generate show notes</button><button id="notesDl">Download (.md)</button><textarea id="notes"></textarea></section>
 <section><h2>5. Social clips</h2><div class="row"><div><label>Start (sec)</label><input id="cs" type="number" value="0"></div><div><label>End (sec)</label><input id="ce" type="number" value="30"></div></div>
 <button id="useCur">Set start to current position</button><button id="clipBtn" disabled>Make clip</button><div id="clips"></div></section>
-<section><h2>6. Episode page and RSS</h2><div class="row"><div><label>Public audio URL</label><input id="audioUrl" placeholder="https://example.com/ep1.mp3"></div><div><label>Site URL</label><input id="siteUrl" placeholder="https://example.com"></div></div>
+<section><h2>6. Episode page and RSS</h2><div class="row"><div><label>Public audio URL (required)</label><input id="audioUrl" placeholder="https://example.com/ep1.mp3"></div><div><label>Site URL</label><input id="siteUrl" placeholder="https://example.com"></div><div><label>Audio file size in bytes (for RSS)</label><input id="bytes" type="number" min="0"></div></div>
 <button id="pageBtn">Build episode page + RSS</button><button id="pageDl">Download episode.html</button><button id="rssDl">Download feed.xml</button>
-<iframe id="preview" title="Episode page preview" style="width:100%;height:260px;border:1px solid #DEDDD8;border-radius:6px"></iframe><pre id="rss"></pre></section>
-<p class="muted">CastCrew v0.1 beta. See HOWTO.md in the repo.</p>
-</main><script src="app.js"></script></body></html>
+<p id="pageInfo" class="muted"></p><iframe id="preview" title="Episode page preview" style="width:100%;height:260px;border:1px solid #DEDDD8;border-radius:6px"></iframe><pre id="rss"></pre></section>
+<p class="muted">CastCrew v0.2 beta. See HOWTO.md in the repo.</p>
+</main><script src="core.js"></script><script src="app.js"></script></body></html>
